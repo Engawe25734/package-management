@@ -10,8 +10,8 @@ terraform {
 # Configuring provider
 provider "aws" {
  region = "us-east-1"
- access_key = "AKIAQ43KCLA4ONCPB3FE"
- secret_key = "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"
+ access_key = "AKIAQ43KCLA4OPB3FE"
+ secret_key = "e1RV12reSm7KM2IA1UqZJTQ6dMdPpIJCGZPzea"
 }
 # Creating a VPC
 resource "aws_vpc" "proj-vpc" {
@@ -106,6 +106,6 @@ resource "aws_eip" "proj-eip" {
 resource "aws_instance" "proj-instance" {
  ami = "ami-09d56f8956ab235b3"
  instance_type = "t2.micro"
- key_name = "elvis2021"
+ key_name = "elvis21"
 }
  
