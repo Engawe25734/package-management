@@ -1,0 +1,8 @@
+sudo yum install unzip
+sudo yum install wget 
+wget https://releases.hashicorp.com/terraform/0.13.3/terraform_0.13.3_linux_amd64.zip
+sudo unzip terraform_0.13.3_linux_amd64.zip -d /home/ec2-user/terraform_install
+vi ~/.bashrc
+export PATH=$PATH:/home/ec2-user/terraform_install
+source ~/.bashrc
+terraform -v
