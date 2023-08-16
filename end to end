@@ -1,0 +1,5 @@
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker.service
+sudo apt install openjdk-11-jdk
+wget -q -o -https://pkg.jenkens.io/debian-stable/jenkins.io.key | sudo apt-ke
