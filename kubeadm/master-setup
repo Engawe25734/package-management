@@ -1,3 +1,6 @@
+# initialise the control plane
+sudo kubeadm init 
+
 # Configure kubectl as a normal ubuntu user
 sudo su - ubuntu
 
