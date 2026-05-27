@@ -1,0 +1,69 @@
+<!--
+Name: Irving Peress
+Date: May 27, 2026
+
+Purpose:
+This exercise focuses on debugging an HTML file by identifying
+and correcting syntax and logical errors. The goal is to ensure
+the webpage runs correctly and displays the proper output.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Assessment - Debugging</title>
+
+    <!-- External CSS File -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <h1>Irving Peress - Debugging Exercise</h1>
+
+    <p>
+        The area of a rectangle is found by multiplying
+        the length by the width:
+    </p>
+
+    <p>
+        <strong>area = length × width</strong>
+    </p>
+
+    <p>
+        For a right triangle, the area is 1/2 the length
+        times the width:
+    </p>
+
+    <p>
+        <strong>area = (length × width) / 2</strong>
+    </p>
+
+    <p>
+        Given these formulas, if we have a rectangle with
+        a length of 5 and width of 10, the corresponding
+        areas of the rectangle and the right triangle
+        formed by the line that bisects the rectangle are:
+    </p>
+
+    <div class="output" id="results"></div>
+
+    <script>
+        // Variables
+        let length = 5;
+        let width = 10;
+
+        // Calculate areas
+        let rectangleArea = length * width;
+        let triangleArea = (length * width) / 2;
+
+        // Display results
+        document.getElementById("results").innerHTML =
+            "<p><strong>Rectangle Area:</strong> " + rectangleArea + "</p>" +
+            "<p><strong>Right Triangle Area:</strong> " + triangleArea + "</p>";
+    </script>
+
+</body>
+</html>
