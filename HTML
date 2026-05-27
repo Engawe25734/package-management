@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<!--
+Name: Irving Peress
+Date: May 21, 2026
+
+Purpose:
+This program calculates shipping and handling fees
+based on the purchase price entered by the user.
+-->
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Calculate Shipping</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <h1>
+        Irving Peress, Calculate Function
+    </h1>
+
+    <!-- ================= FORM AREA ================= -->
+
+    <!-- Purchase price label -->
+    <label for="purchasePrice">
+
+        Purchase Price
+
+    </label>
+
+    <!-- Purchase price textbox -->
+    <input type="number"
+        id="purchasePrice">
+
+    <!-- Button -->
+    <button onclick="calculateShipping()">
+
+        Calculate Shipping and Handling
+
+    </button>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        // Function used to calculate shipping
+        function calculateShipping() {
+
+            // Get purchase price entered by user
+            let purchasePrice =
+                parseFloat(
+                    document.getElementById("purchasePrice").value
+                );
+
+            // Variable used to store shipping fee
+            let shippingFee;
+
+            // If purchase price is $25 or less
+            if (purchasePrice <= 25) {
+
+                shippingFee = 1.50;
+
+            }
+
+            // If purchase price is over $25
+            else {
+
+                shippingFee =
+                    purchasePrice * 0.10;
+
+            }
+
+            // Calculate total
+            let total =
+                purchasePrice + shippingFee;
+
+            // Display alert message
+            alert(
+                "The order total is: $" +
+                total.toFixed(2)
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
