@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+        Name: Elvis Ngawe
+        Date: May 27, 2026
+
+        Purpose:
+        This program demonstrates the use of a while loop in JavaScript.
+        It displays all even numbers between 1 and 101.
+        A new line begins whenever a number is divisible by 10.
+    -->
+
+    <title>While Loops</title>
+
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+    <h1>Elvis ngawe, While Loops</h1>
+
+    <div id="output"></div>
+
+    <script>
+
+        let number = 2;
+        let result = "";
+
+        while (number <= 100) {
+
+            result += number + ", ";
+
+            // Start a new line if divisible by 10
+            if (number % 10 === 0) {
+                result += "<br>";
+            }
+
+            number += 2;
+        }
+
+        document.getElementById("output").innerHTML = result;
+
+    </script>
+
+</body>
+
+</html>
