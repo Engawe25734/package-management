@@ -1,0 +1,85 @@
+body {
+    font-family: Arial;
+    margin: 0;
+    padding: 0;
+    background: white;
+    color: black;
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 20px;
+    background: #f4f4f4;
+}
+
+/* NAV */
+nav {
+    background: #333;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    margin: 10px;
+    text-decoration: none;
+}
+
+/* SECTIONS */
+section {
+    padding: 20px;
+}
+
+/* FEATURE BOX */
+.box {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+/* IMAGES */
+img {
+    margin: 10px;
+    border-radius: 8px;
+}
+
+/* FORM */
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+}
+
+input, textarea {
+    margin: 5px 0;
+    padding: 8px;
+}
+
+button {
+    background: navy;
+    color: white;
+    padding: 10px;
+    border: none;
+}
+
+/* NOTIFICATION */
+.notification {
+    background: lightgreen;
+    padding: 10px;
+    text-align: center;
+}
+
+/* DARK MODE */
+.dark-mode {
+    background: #121212;
+    color: white;
+}
+
+.dark-mode header {
+    background: #1e1e1e;
+}
+
+.dark-mode nav {
+    background: black;
+}
