@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- DARK MODE TOGGLE -->
+<div class="toggle-container">
+    <label>
+        <input type="checkbox" id="darkModeToggle">
+        Dark Mode
+    </label>
+</div>
+
+<!-- HEADER -->
+<header>
+    <h1 id="welcomeMessage">Welcome to My Portfolio</h1>
+    <p>Software Development Student Portfolio</p>
+</header>
+
+<!-- NAVIGATION -->
+<nav>
+    <a href="#about">About</a>
+    <a href="#featured">Featured Content</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<!-- ABOUT -->
+<section id="about">
+    <h2>About Me</h2>
+
+    <p>
+        Hello! My name is Elvis Ngawe. I am learning HTML, CSS, JavaScript, Git, GitHub, and web development.
+    </p>
+
+    <h3>My Skills</h3>
+    <ul id="skillsList"></ul>
+</section>
+
+<!-- FEATURED CONTENT -->
+<section id="featured">
+
+    <h2>Featured Content</h2>
+
+    <div class="box" id="universityResources">
+        <h3>University Resources</h3>
+        <a href="https://www.ecpi.edu/" target="_blank">ECPI University</a>
+    </div>
+
+    <div class="box" id="personalProjects">
+        <h3>Personal Projects</h3>
+
+        <a href="#">
+            <img src="https://via.placeholder.com/200x120" alt="Project 1">
+        </a>
+
+        <a href="#">
+            <img src="https://via.placeholder.com/200x120" alt="Project 2">
+        </a>
+    </div>
+
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+
+    <h2>Projects</h2>
+
+    <p>Here are some of my projects.</p>
+
+    <a href="#">
+        <img src="https://via.placeholder.com/250x150" alt="Project A">
+    </a>
+
+    <a href="#">
+        <img src="https://via.placeholder.com/250x150" alt="Project B">
+    </a>
+
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+
+    <h2>Contact Me</h2>
+
+    <form id="contactForm">
+
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <textarea id="message" placeholder="Message" required></textarea>
+
+        <button type="submit">Send Message</button>
+
+    </form>
+
+</section>
+
+<script>
+
+// Welcome message
+let name = prompt("What is your name?");
+if (name && name.trim() !== "") {
+    document.getElementById("welcomeMessage").textContent =
+        "Welcome, " + name;
+}
+
+// Skills
+let skills = ["HTML", "CSS", "JavaScript", "Git", "GitHub"];
+let list = document.getElementById("skillsList");
+
+skills.forEach(skill => {
+    let li = document.createElement("li");
+    li.textContent = skill;
+    list.appendChild(li);
+});
+
+// Add project text dynamically
+let newProject = document.createElement("p");
+newProject.textContent = "New Project Added: Portfolio Website";
+document.getElementById("projects").appendChild(newProject);
+
+// Notification after delay
+setTimeout(() => {
+    let note = document.createElement("div");
+    note.textContent = "Welcome to my portfolio!";
+    note.classList.add("notification");
+    document.body.prepend(note);
+}, 2000);
+
+// Modify elements
+document.querySelector("#about h2").style.color = "darkblue";
+document.querySelector("header").style.borderBottom = "3px solid navy";
+
+// Dark mode
+document.getElementById("darkModeToggle").addEventListener("change", function () {
+    document.body.classList.toggle("dark-mode");
+});
+
+// Form submission delay
+document.getElementById("contactForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    let msg = document.createElement("p");
+    msg.textContent = "Sending message...";
+    this.appendChild(msg);
+
+    setTimeout(() => {
+        msg.textContent = "Message sent successfully!";
+    }, 3000);
+});
+
+</script>
+
+</body>
+</html>
