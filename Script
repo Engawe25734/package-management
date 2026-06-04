@@ -1,0 +1,67 @@
+];
+
+        // Array containing captions
+
+        const captions = [
+
+            "International Space Station fourth expansion [2009]",
+
+            "Assembling the International Space Station [1998]",
+
+            "The Atlantis docks with the ISS [2001]",
+
+            "The Atlantis approaches the ISS [2000]",
+
+            "The Soyuz departs from the ISS [2001]",
+
+            "International Space Station over Earth [2002]",
+
+            "The International Space Station first expansion [2002]",
+
+            "Hurricane Ivan from the ISS [2008]",
+
+            "The Soyuz spacecraft approaches the ISS [2005]",
+
+            "The International Space Station from above [2006]",
+
+            "Maneuvering in space with the Canadarm2 [2006]",
+
+            "The International Space Station second expansion [2006]",
+
+            "The International Space Station third expansion [2007]",
+
+            "The ISS over the Ionian Sea [2007]"
+
+        ];
+
+        let currentSlide = 0;
+
+        const img = document.getElementById("slideshow-img");
+
+        const caption = document.getElementById("caption");
+
+        function showSlide() {
+
+            img.src = images[currentSlide];
+
+            caption.textContent = captions[currentSlide];
+
+            currentSlide++;
+
+            if (currentSlide >= images.length) {
+
+                currentSlide = 0;
+
+            }
+
+        }
+
+        showSlide();
+
+        setInterval(showSlide, 3000);
+
+    </script>
+
+</body>
+
+</html>
