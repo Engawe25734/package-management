@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!--
+        Name: Elvis Ngawe
+        Date: June 8, 2026
+
+        Purpose:
+        This exercise demonstrates how to use cookies to track visits.
+        A first-time visitor sees a welcome message.
+        Returning visitors see the date and time of their previous visit.
+    -->
+
+    <title>Tracking Visits</title>
+
+    <script>
+        function getCookie(name) {
+            let cookies = document.cookie.split(";");
+
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+
+                if (cookie.indexOf(name + "=") === 0) {
+                    return cookie.substring(name.length + 1);
+                }
+            }
+            return "";
+        }
+
+        window.onload = function () {
+
+            let lastVisit = getCookie("lastvisit");
+            let message = document.getElementById("visitMessage");
+
+            if (lastVisit === "") {
+                message.innerHTML =
+                    "Elvis Ngawe, this is your first visit.";
+            }
+            else {
+                message.innerHTML =
+                    "Elvis Ngawe, your last visit was " +
+                    lastVisit + ".";
+            }
+
+            let now = new Date();
+
+            let visitTime =
+                now.toLocaleDateString() +
+                " at " +
+                now.toLocaleTimeString();
+
+            document.cookie =
+                "lastvisit=" + visitTime +
+                "; expires=Fri, 31 Dec 2038 23:59:59 UTC; path=/";
+        };
+    </script>
+</head>
+
+<body>
+
+    <h1>Elvis Ngawe, Tracking Visits</h1>
+
+    <p id="visitMessage"></p>
+
+</body>
+</html>
