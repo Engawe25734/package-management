@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+        Name: Elvis Ngawe
+        Date: June 8, 2026
+
+        Purpose:
+        This exercise demonstrates the use of cookies to
+        track the number of visits to a webpage and display
+        the date and time of the user's previous visit.
+    -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Visits</title>
+
+    <style>
+        body {
+            font-family: Georgia, serif;
+            margin: 40px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Elvis Ngawe, Counting Visits</h1>
+
+    <div id="output"></div>
+
+    <script>
+        function getCookie(name) {
+            let cookies = document.cookie.split(";");
+
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+
+                if (cookie.indexOf(name + "=") === 0) {
+                    return cookie.substring(name.length + 1);
+                }
+            }
+            return "";
+        }
+
+        function setCookie(name, value, days) {
+            let date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+
+            document.cookie =
+                name + "=" + value +
+                ";expires=" + date.toUTCString() +
+                ";path=/";
+        }
+
+        let visitCount = getCookie("visitCount");
+        let lastVisit = getCookie("lastVisit");
+
+        let output = document.getElementById("output");
+
+        if (visitCount === "") {
+
+            output.innerHTML =
+                "<p>Elvis Ngawe, this is your first visit.</p>";
+
+            setCookie("visitCount", 1, 365);
+            setCookie("lastVisit", new Date().toString(), 365);
+
+        } else {
+
+            let newCount = parseInt(visitCount) + 1;
+
+            output.innerHTML =
+                "<p>Elvis Ngawe, you have visited this page " +
+                newCount +
+                " times.</p>" +
+                "<p>Your last visit was " +
+                lastVisit +
+                "</p>";
+
+            setCookie("visitCount", newCount, 365);
+            setCookie("lastVisit", new Date().toString(), 365);
+        }
+    </script>
+
+</body>
+</html>
