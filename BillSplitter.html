@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+        Name: Irving Peress
+        Date: June 10, 2026
+
+        Purpose:
+        This exercise calculates a tip amount, total bill,
+        and amount owed per person. JavaScript validation
+        provides live feedback for user input.
+    -->
+
+    <title>Bill Splitter</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        h1 {
+            margin-bottom: 40px;
+        }
+
+        .form-row {
+            display: flex;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+
+        label {
+            width: 180px;
+            font-size: 16px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        input {
+            width: 240px;
+            padding: 8px;
+            font-size: 15px;
+        }
+
+        .hint {
+            color: #666;
+            font-size: 14px;
+            margin-top: 3px;
+        }
+
+        .error {
+            color: #c94b5b;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 3px;
+        }
+
+        button {
+            padding: 10px 18px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #summary {
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            display: none;
+        }
+
+        #summary h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Irving Peress — Bill Splitter</h1>
+
+    <div class="form-row">
+        <label for="billAmount">Bill Amount</label>
+
+        <div class="input-group">
+            <input type="number" id="billAmount" placeholder="e.g., 84.50">
+            <div id="billError" class="error"></div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <label for="tipPercentage">Tip Percentage</label>
+
+        <div class="input-group">
+            <input type="number" id="tipPercentage" min="0" max="100" placeholder="0–100">
+
+            <div class="hint">Enter a number from 0 to 100.</div>
+
+            <div id="tipError" class="error"></div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <label for="peopleCount">People Count</label>
+
+        <div class="input-group">
+            <input type="number" id="peopleCount" placeholder="e.g., 3">
+
+            <div id="peopleError" class="error"></div>
+        </div>
+    </div>
+
+    <button onclick="calculateBill()">Calculate</button>
+
+    <div id="summary">
+        <h2>Summary</h2>
+
+        <p>Calculated Tip: <span id="tipResult"></span></p>
+
+        <p>Total with Tip: <span id="totalResult"></span></p>
+
+        <p>Per Person: <span id="personResult"></span></p>
+    </div>
+
+</div>
+
+<script src="Calculation.js"></script>
+
+</body>
+</html>
