@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!--
+Name: Elvis ngawe
+Date: June 10, 2026
+
+Purpose:
+This exercise demonstrates client-side form validation using
+JavaScript, jQuery, and validator.js. The webpage provides
+live feedback to users while entering data and validates all
+required fields before submission.
+-->
+
+<title>Validator</title>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/validator/13.11.0/validator.min.js"></script>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f4f4;
+}
+
+.container{
+    width:600px;
+    margin:40px auto;
+    background:white;
+    padding:40px;
+    box-shadow:0 0 10px #999;
+}
+
+h1{
+    margin-bottom:30px;
+    font-size:32px;
+}
+
+.form-row{
+    display:flex;
+    align-items:flex-start;
+    margin-bottom:18px;
+}
+
+label{
+    width:150px;
+    font-size:18px;
+    padding-top:8px;
+}
+
+.input-container{
+    flex:1;
+}
+
+input{
+    width:250px;
+    padding:8px;
+    border:1px solid #999;
+    font-size:16px;
+}
+
+.error{
+    color:red;
+    font-size:15px;
+    margin-top:4px;
+    font-weight:bold;
+}
+
+button{
+    padding:6px 14px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Irving Peress — Form Validation</h1>
+
+<form id="signupForm">
+
+<div class="form-row">
+<label for="fullname">Full Name</label>
+
+<div class="input-container">
+<input type="text" id="fullname">
+<div id="nameError" class="error"></div>
+</div>
+</div>
+
+<div class="form-row">
+<label for="email">Email</label>
+
+<div class="input-container">
+<input type="text" id="email">
+<div id="emailError" class="error"></div>
+</div>
+</div>
+
+<div class="form-row">
+<label for="password">Password</label>
+
+<div class="input-container">
+<input type="password" id="password">
+<div id="passwordError" class="error"></div>
+</div>
+</div>
+
+<div class="form-row">
+<label for="website">Website URL</label>
+
+<div class="input-container">
+<input type="text" id="website">
+<div id="websiteError" class="error"></div>
+</div>
+</div>
+
+<div class="form-row">
+<label for="age">Age</label>
+
+<div class="input-container">
+<input type="number" id="age">
+<div id="ageError" class="error"></div>
+</div>
+</div>
+
+<button type="submit">Submit</button>
+
+</form>
+
+</div>
+
+<script src="FormValidation.js"></script>
+
+</body>
+</html>
