@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+        Name: Your Name
+        Date: 2026-06-10
+        Purpose: Contact form with modal popup, tooltip, and persistent dark mode using localStorage.
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form with Storage Features</title>
+
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- =========================
+     WELCOME MODAL
+========================= -->
+<div class="modal" id="welcomeModal">
+    <div class="modal-content">
+        <h2>Welcome</h2>
+        <p>This page is a work in progress.</p>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<header>
+    <h1>Contact Form</h1>
+</header>
+
+<div class="container">
+
+    <!-- DARK MODE TOGGLE -->
+    <div class="toggle">
+        <label>
+            <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
+            Enable Dark Mode
+        </label>
+    </div>
+
+    <!-- CONTACT FORM -->
+    <form>
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Your Message" rows="5" required></textarea>
+
+        <!-- TOOLTIP ON SUBMIT -->
+        <div class="tooltip">
+            <button type="submit">Submit</button>
+            <span class="tooltip-text">Click to send your message!</span>
+        </div>
+    </form>
+
+</div>
+
+<script>
+    // =========================
+    // MODAL FUNCTIONALITY
+    // =========================
+
+    const modal = document.getElementById("welcomeModal");
+
+    window.onload = function () {
+        modal.style.display = "flex";
+
+        // Load dark mode preference from localStorage
+        if (localStorage.getItem("darkMode") === "enabled") {
+            document.body.classList.add("dark-mode");
+            document.getElementById("darkToggle").checked = true;
+        }
+    };
+
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    // =========================
+    // DARK MODE TOGGLE
+    // =========================
+
+    function toggleDarkMode() {
+        const toggle = document.getElementById("darkToggle");
+
+        if (toggle.checked) {
+            document.body.classList.add("dark-mode");
+            localStorage.setItem("darkMode", "enabled");
+        } else {
+            document.body.classList.remove("dark-mode");
+            localStorage.setItem("darkMode", "disabled");
+        }
+    }
+</script>
+
+</body>
+</html>
