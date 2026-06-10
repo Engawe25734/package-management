@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+        Name: Your Name
+        Date: 2026-06-10
+        Purpose: Portfolio page that dynamically loads projects using sessionStorage.
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio Projects</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header>
+    <h1>My Portfolio Projects</h1>
+</header>
+
+<main>
+
+    <!-- PROJECT SECTION -->
+    <section id="project-section">
+        <!-- Projects will be injected here dynamically -->
+    </section>
+
+</main>
+
+<script>
+    // =========================
+    // PROJECT OBJECTS
+    // =========================
+
+    const projects = [
+        {
+            title: "Weather App",
+            summary: "A simple weather application that displays real-time weather data using an API.",
+            image: "https://via.placeholder.com/300x180?text=Weather+App",
+            repo: "https://github.com/user/weather-app"
+        },
+        {
+            title: "To-Do List",
+            summary: "A task manager that allows users to add, delete, and track daily tasks.",
+            image: "https://via.placeholder.com/300x180?text=To-Do+List",
+            repo: "https://github.com/user/todo-list"
+        },
+        {
+            title: "Calculator App",
+            summary: "A basic calculator built with JavaScript supporting standard arithmetic operations.",
+            image: "https://via.placeholder.com/300x180?text=Calculator",
+            repo: "https://github.com/user/calculator"
+        }
+    ];
+
+    // =========================
+    // SESSION STORAGE LOGIC
+    // =========================
+
+    // Check if data exists in sessionStorage
+    if (!sessionStorage.getItem("projects")) {
+        sessionStorage.setItem("projects", JSON.stringify(projects));
+    }
+
+    // Retrieve and parse data
+    const storedProjects = JSON.parse(sessionStorage.getItem("projects"));
+
+    // =========================
+    // RENDER PROJECTS
+    // =========================
+
+    const section = document.getElementById("project-section");
+
+    storedProjects.forEach(project => {
+
+        // Create card container
+        const card = document.createElement("div");
+        card.classList.add("project-card");
+
+        // Title
+        const title = document.createElement("h2");
+        title.textContent = project.title;
+
+        // Image
+        const img = document.createElement("img");
+        img.src = project.image;
+        img.alt = project.title;
+
+        // Summary
+        const summary = document.createElement("p");
+        summary.textContent = project.summary;
+
+        // Repo link
+        const link = document.createElement("a");
+        link.href = project.repo;
+        link.textContent = "View Repository";
+        link.target = "_blank";
+
+        // Append elements
+        card.appendChild(title);
+        card.appendChild(img);
+        card.appendChild(summary);
+        card.appendChild(link);
+
+        section.appendChild(card);
+    });
+
+</script>
+
+</body>
+</html>
