@@ -1,0 +1,32 @@
+body {
+    font-family: "Times New Roman", serif;
+    background-color: #ffffff;
+}
+
+.container {
+    width: 600px;
+    margin: 50px auto;
+    border: 1px solid #cccccc;
+    padding: 30px;
+    box-shadow: 0 0 10px #cccccc;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+label {
+    display: inline-block;
+    width: 140px;
+    margin-bottom: 15px;
+}
+
+input {
+    width: 220px;
+    padding: 3px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 5px 10px;
+}
