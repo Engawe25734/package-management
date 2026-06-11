@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+Assignment: Trip Stats Calculator
+Name: Elvis Ngawe
+Date: June 11, 2026
+
+This program collects trip information,
+calculates mileage and fuel economy,
+stores data using sessionStorage and cookies,
+and displays a trip summary in a new window.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Stats Calculator</title>
+    <link rel="stylesheet" href="TripStatsCalculator.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Elvis Ngawe, Trip Stats Calculator</h1>
+
+        <form>
+            <label for="tripName">Trip Name:</label>
+            <input type="text" id="tripName"><br>
+
+            <label for="startMileage">Starting Mileage:</label>
+            <input type="number" id="startMileage"><br>
+
+            <label for="endMileage">Ending Mileage:</label>
+            <input type="number" id="endMileage"><br>
+
+            <label for="gallonsUsed">Gallons of Gas Used:</label>
+            <input type="number" step="0.1" id="gallonsUsed"><br>
+
+            <button type="button" onclick="getTripSummary()">
+                Get Trip Summary
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function getTripSummary() {
+
+            let tripName = document.getElementById("tripName").value;
+            let startMileage = parseFloat(document.getElementById("startMileage").value);
+            let endMileage = parseFloat(document.getElementById("endMileage").value);
+            let gallonsUsed = parseFloat(document.getElementById("gallonsUsed").value);
+
+            if (tripName === "" ||
+                isNaN(startMileage) ||
+                isNaN(endMileage) ||
+                isNaN(gallonsUsed)) {
+
+                alert("Please complete all fields.");
+                return;
+            }
+
+            let totalMiles = endMileage - startMileage;
+            let mpg = totalMiles / gallonsUsed;
+
+            let tripSummary = {
+                tripName: tripName,
+                totalMiles: totalMiles,
+                gallonsUsed: gallonsUsed,
+                mpg: mpg.toFixed(1)
+            };
+
+            let currentDateTime = new Date().toString();
+
+            sessionStorage.setItem("tripDateTime", currentDateTime);
+
+            document.cookie =
+                "tripSummary=" +
+                encodeURIComponent(JSON.stringify(tripSummary)) +
+                ";path=/";
+
+            let resultsWindow = window.open("", "_blank", "width=700,height=400");
+
+            resultsWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Trip Summary</title>
+                </head>
+                <body style="font-family: Times New Roman, serif;">
+                    <h2>Elvis Ngawe, Trip Summary</h2>
+
+                    <p><strong>Trip Name:</strong> ${tripSummary.tripName}</p>
+
+                    <p><strong>Total Miles Traveled:</strong> ${tripSummary.totalMiles}</p>
+
+                    <p><strong>Gallons of Gas Consumed:</strong> ${tripSummary.gallonsUsed}</p>
+
+                    <p><strong>Fuel Economy (MPG) for Trip:</strong> ${tripSummary.mpg}</p>
+
+                    <p><strong>Summary Generated On:</strong> ${currentDateTime}</p>
+                </body>
+                </html>
+            `);
+
+            resultsWindow.document.close();
+        }
+    </script>
+
+</body>
+</html>
