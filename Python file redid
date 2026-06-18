@@ -1,0 +1,166 @@
+# ==========================================================
+# Name: Elvis ngawe
+# Assignment: Redis CRUD Application
+# Date: 06/18/2026
+# Purpose:
+# Demonstrates CRUD operations on Redis sets using
+# the Redis-py library and a menu-driven interface.
+# ==========================================================
+
+import redis
+
+# Connect to Redis
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+
+
+# Query set members
+def query_set():
+    key = input("\nEnter the key of the set to query:\n")
+
+    if r.exists(key):
+        members = r.smembers(key)
+
+        print("\nSet Members:")
+        for member in members:
+            print(member)
+
+        print("\nThe cardinality of the set is:")
+        print(r.scard(key))
+    else:
+        print("Set does not exist.")
+
+
+# Add a new set
+def add_set():
+    key = input("\nEnter the key you wish to add:\n")
+
+    count = int(input(
+        "\nEnter how many members will this set have:\n"))
+
+    for i in range(count):
+        member = input("\nEnter the next member value:\n")
+        r.sadd(key, member)
+
+    print("\nSet added successfully.")
+
+
+# Update members
+def update_set():
+
+    key = input(
+        "\nEnter the key of the set you wish to update:\n")
+
+    if not r.exists(key):
+        print("Set does not exist.")
+        return
+
+    while True:
+
+        print("\nPlease type in a number and press enter "
+              "to execute the menu option")
+        print("1. Add new member")
+        print("2. Remove member")
+        print("3. Remove all members")
+        print("4. Exit Update Menu")
+
+        choice = input()
+
+        if choice == "1":
+
+            member = input("\nEnter member to add:\n")
+            r.sadd(key, member)
+
+            print("Member added.")
+
+        elif choice == "2":
+
+            member = input("\nEnter member to remove:\n")
+            r.srem(key, member)
+
+            print("Member removed.")
+
+        elif choice == "3":
+
+            print("\nRemoving all set members...")
+
+            members = r.smembers(key)
+
+            for member in members:
+                print(f"Removing Member: {member}...")
+                r.srem(key, member)
+
+            print("\nThe cardinality of the set is now:")
+            print(r.scard(key))
+
+        elif choice == "4":
+            break
+
+        else:
+            print("Invalid choice.")
+
+
+# Delete a set
+def delete_set():
+
+    key = input("\nEnter the key of the set to delete:\n")
+
+    if r.delete(key):
+        print("Set deleted successfully.")
+    else:
+        print("Set not found.")
+
+
+# Delete all data
+def delete_all_data():
+
+    confirm = input(
+        "\nDelete ALL data from database? (yes/no):\n")
+
+    if confirm.lower() == "yes":
+        r.flushdb()
+        print("All database data deleted.")
+    else:
+        print("Operation cancelled.")
+
+
+# Main menu
+def main():
+
+    while True:
+
+        print("\nType in a number and press enter "
+              "to execute the menu option.")
+        print("1. Query for set members")
+        print("2. Add a new set")
+        print("3. Update members of a set")
+        print("4. Delete a set")
+        print("5. Delete all data from the database")
+        print("6. Exit the program")
+
+        choice = input()
+
+        if choice == "1":
+            query_set()
+
+        elif choice == "2":
+            add_set()
+
+        elif choice == "3":
+            update_set()
+
+        elif choice == "4":
+            delete_set()
+
+        elif choice == "5":
+            delete_all_data()
+
+        elif choice == "6":
+            print("Goodbye!")
+            break
+
+        else:
+            print("Invalid selection.")
+
+
+if __name__ == "__main__":
+    main()
