@@ -1,0 +1,252 @@
+# -----------------------------------------------------------
+# Name: Elvis ngawe
+# Assignment: Python Application Accessing a Document Database
+# Date: June 2026
+# Purpose:
+# Demonstrate CRUD operations on a MongoDB document database
+# using PyMongo and a menu-driven application.
+# -----------------------------------------------------------
+
+from pymongo import MongoClient
+
+# Connect to MongoDB
+print("Connecting to local Mongo database...")
+
+client = MongoClient("mongodb://localhost:27017/")
+db = client["Amazon"]
+collection = db["ReviewData"]
+
+print("Connected successfully!")
+
+# -----------------------------------------------------------
+# QUERY DOCUMENTS
+# -----------------------------------------------------------
+def query_documents():
+
+    print("\n1. Query by reviewID")
+    print("2. Filter for a number of stars and greater")
+    print("3. Filter for less than a number of stars")
+    print("4. Filter for a word in the title")
+    print("5. Filter for a word in the review body content")
+
+    choice = input("\nPlease type in a number and press enter: ")
+
+    if choice == "1":
+
+        review_id = input("\nEnter Review ID: ")
+
+        result = collection.find_one(
+            {"review_id": review_id}
+        )
+
+        print(result)
+
+    elif choice == "2":
+
+        stars = int(input("\nEnter minimum stars: "))
+
+        results = collection.find(
+            {"stars": {"$gte": stars}}
+        )
+
+        for doc in results:
+            print(doc)
+
+    elif choice == "3":
+
+        stars = int(input("\nEnter maximum stars: "))
+
+        results = collection.find(
+            {"stars": {"$lt": stars}}
+        )
+
+        for doc in results:
+            print(doc)
+
+    elif choice == "4":
+
+        word = input("\nSearch the title for: ")
+
+        results = collection.find(
+            {
+                "review_title":
+                {
+                    "$regex": word,
+                    "$options": "i"
+                }
+            }
+        )
+
+        for doc in results:
+            print(doc)
+
+    elif choice == "5":
+
+        word = input("\nSearch review body for: ")
+
+        results = collection.find(
+            {
+                "review_body":
+                {
+                    "$regex": word,
+                    "$options": "i"
+                }
+            }
+        )
+
+        for doc in results:
+            print(doc)
+
+
+# -----------------------------------------------------------
+# ADD DOCUMENT
+# -----------------------------------------------------------
+def add_document():
+
+    print("\nAdd New Document")
+
+    document = {
+        "review_id": input("Review ID: "),
+        "product_id": input("Product ID: "),
+        "reviewer_id": input("Reviewer ID: "),
+        "stars": int(input("Stars: ")),
+        "review_body": input("Review Body: "),
+        "review_title": input("Review Title: "),
+        "language": input("Language: "),
+        "product_category": input("Product Category: ")
+    }
+
+    collection.insert_one(document)
+
+    print("\nDocument added successfully!")
+
+
+# -----------------------------------------------------------
+# UPDATE DOCUMENT
+# -----------------------------------------------------------
+def update_document():
+
+    review_id = input(
+        "\nWhat is the ReviewID you wish to update?\n"
+    )
+
+    field = input(
+        "Which field would you like to update?\n"
+    )
+
+    value = input(
+        "What would you like to change the value to?\n"
+    )
+
+    if field == "stars":
+        value = int(value)
+
+    collection.update_one(
+        {"review_id": review_id},
+        {"$set": {field: value}}
+    )
+
+    print("\nNew document has been updated to:\n")
+
+    print(
+        collection.find_one(
+            {"review_id": review_id}
+        )
+    )
+
+
+# -----------------------------------------------------------
+# DELETE DOCUMENT
+# -----------------------------------------------------------
+def delete_document():
+
+    review_id = input(
+        "\nWhat is the ReviewID of the document you wish to delete?\n"
+    )
+
+    result = collection.delete_one(
+        {"review_id": review_id}
+    )
+
+    if result.deleted_count > 0:
+        print("Document deleted!")
+    else:
+        print("Document not found.")
+
+
+# -----------------------------------------------------------
+# DELETE ALL DOCUMENTS
+# -----------------------------------------------------------
+def delete_all_documents():
+
+    confirm = input(
+        "\nDelete ALL documents? (Y/N): "
+    )
+
+    if confirm.upper() == "Y":
+
+        result = collection.delete_many({})
+
+        print(
+            f"{result.deleted_count} documents deleted!"
+        )
+
+
+# -----------------------------------------------------------
+# DELETE COLLECTION
+# -----------------------------------------------------------
+def delete_collection():
+
+    confirm = input(
+        "\nDelete collection? (Y/N): "
+    )
+
+    if confirm.upper() == "Y":
+
+        collection.drop()
+
+        print("Collection deleted!")
+
+
+# -----------------------------------------------------------
+# MAIN MENU
+# -----------------------------------------------------------
+while True:
+
+    print("\n")
+    print("Type in a number and press enter to execute the menu option.\n")
+
+    print("1. Query for documents")
+    print("2. Add a new document")
+    print("3. Update fields of a document")
+    print("4. Delete a document")
+    print("5. Delete all documents from the collection")
+    print("6. Delete a collection")
+    print("7. Exit the program")
+
+    selection = input("\nSelection: ")
+
+    if selection == "1":
+        query_documents()
+
+    elif selection == "2":
+        add_document()
+
+    elif selection == "3":
+        update_document()
+
+    elif selection == "4":
+        delete_document()
+
+    elif selection == "5":
+        delete_all_documents()
+
+    elif selection == "6":
+        delete_collection()
+
+    elif selection == "7":
+        print("\nProgram Ended")
+        break
+
+    else:
+        print("Invalid option. Try again.")
