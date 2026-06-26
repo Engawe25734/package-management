@@ -1,0 +1,98 @@
+# =====================================================
+# MONGODB MENU 
+# =====================================================
+
+def run_mongodb_menu(data_filepath="Project/data/sample_repos.json"):
+
+    collection = mongodb_crud.connect_to_mongodb()
+
+    while True:
+
+        print("\n--- MONGODB MENU ---")
+        print("1 Load")
+        print("2 Read")
+        print("3 Update")
+        print("4 Delete")
+        print("5 List Repos")
+        print("6 Repo Name Length Analysis")
+        print("7 Top Watch Count")
+        print("8 Watch Statistics")
+        print("0 Back")
+
+        choice = input("Choice: ")
+
+        # -------------------------------------------------
+        # LOAD JSON → MONGODB
+        # -------------------------------------------------
+        if choice == "1":
+
+            data = mongodb_crud.load_github_data(data_filepath)
+
+            mongodb_crud.bulk_create_repos(collection, data)
+
+            print("[OK] MongoDB loaded from sample_repos.json")
+
+        # -------------------------------------------------
+        # READ ONE REPO
+        # -------------------------------------------------
+        elif choice == "2":
+
+            name = input("Repo name: ")
+            print(mongodb_crud.read_repo(collection, name))
+
+        # -------------------------------------------------
+        # UPDATE REPO (watch_count or other field)
+        # -------------------------------------------------
+        elif choice == "3":
+
+            name = input("Repo name: ")
+            field = input("Field (repo_name/watch_count): ")
+            value = input("Value: ")
+
+            # convert watch_count to int if needed
+            if field == "watch_count":
+                value = int(value)
+
+            mongodb_crud.update_repo(collection, name, {field: value})
+
+        # -------------------------------------------------
+        # DELETE REPO
+        # -------------------------------------------------
+        elif choice == "4":
+
+            name = input("Repo name: ")
+            mongodb_crud.delete_repo(collection, name)
+
+        # -------------------------------------------------
+        # LIST ALL REPOS
+        # -------------------------------------------------
+        elif choice == "5":
+
+            print(mongodb_crud.list_all_repos(collection))
+
+        # -------------------------------------------------
+        # FEATURE 1: NAME LENGTH ANALYSIS
+        # -------------------------------------------------
+        elif choice == "6":
+
+            mongodb_features.display_repo_name_lengths(collection)
+
+        # -------------------------------------------------
+        # FEATURE 2: TOP WATCHED REPOS
+        # -------------------------------------------------
+        elif choice == "7":
+
+            mongodb_features.display_top_repositories(collection)
+
+        # -------------------------------------------------
+        # FEATURE 3: WATCH STATISTICS
+        # -------------------------------------------------
+        elif choice == "8":
+
+            mongodb_features.display_watch_statistics(collection)
+
+        # -------------------------------------------------
+        # EXIT
+        # -------------------------------------------------
+        elif choice == "0":
+            break
