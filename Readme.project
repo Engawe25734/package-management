@@ -1,0 +1,217 @@
+SDC435L
+
+Lab files
+
+Project Overview
+
+This Python application integrates with multiple database technologies to store and analyze data from the GitHub Archive dataset (GitHubArchive-Dataset.zip). Each part of the project introduces a new database, building toward a comprehensive understanding of how different data storage systems handle the same real-world data.
+
+This is a five-part group project. Part 1 (Redis) is fully implemented. Parts 2–5 are placeholders and will be completed in future weeks.
+
+Part	Database	Type	Status
+1	Redis	Key-Value (In-Memory)	Complete
+2	MongoDB	Document	Complete (Week 2)
+3	Cassandra	Wide-Column	Under Construction
+4	Neo4j	Graph	Under Construction
+5	SQLite	Relational	Under Construction
+
+Dataset
+
+This application uses Commits.json from the provided GitHubArchive-Dataset.zip. Each line of the file is one JSON object describing a single Git commit, with fields including:
+
+Field	Description
+commit	The commit SHA — used as the unique Redis key
+author	{ "name": ..., "email": ... } — who wrote the commit
+committer	{ "name": ..., "email": ... } — who committed it
+repo_name	A list containing the repository name(s), e.g. ["owner/repo"]
+message	The full commit message
+subject	The first line of the commit message
+parent	A list of parent commit SHA(s)
+tree	The tree SHA
+
+The dataset ZIP also includes several other files (Files.json, Contents.json, Languages.json, Licenses.json, and Sample_* variants) describing repository file listings, file contents, language breakdowns, and license info. These are not used by the current Redis implementation but are used in later phases such as MongoDB.
+
+Project Structure
+
+project/
+├── menu.py               # Entry point — main menu and all submenus
+├── redis_crud.py         # Redis: connection, data loading, CRUD operations
+├── redis_features.py     # Redis: three analytical features
+├── mongodb_crud.py       # MongoDB: CRUD operations (Week 2)
+├── mongodb_features.py   # MongoDB: analytical features (Week 2)
+├── README.md             # This file
+└── data/
+    ├── Commits.json       # Redis dataset (GitHub commits)
+    └── Sample_repos.json  # MongoDB dataset (repositories)
+
+File Responsibilities
+
+menu.py — The only file you run. Displays the main database selection menu, routes to each database's submenu, and handles all user input and result display. As new databases are added in future weeks, new submenus are added here.
+
+redis_crud.py — All core Redis functionality: establishing the connection, loading JSONL commit data from disk, normalizing the repo_name list field, and the four CRUD operations (Create, Read, Update, Delete) keyed on commit SHA. Also imported by redis_features.py for helper functions.
+
+redis_features.py — The three analytical features built on top of Redis data. Uses Redis sorted sets and lists to generate repository, keyword, and author analytics.
+
+mongodb_crud.py — Handles MongoDB connection, dataset loading, and CRUD operations using PyMongo. Stores repository-level documents in a MongoDB collection.
+
+mongodb_features.py — Implements analytical queries using MongoDB aggregation pipelines.
+
+Navigation Pathways
+
+Main Menu
+
+python menu.py
+│
+├── 1. Redis      → Redis Submenu (fully implemented)
+├── 2. MongoDB    → MongoDB Submenu (fully implemented)
+├── 3. Cassandra  → "Option under construction"
+├── 4. Neo4j      → "Option under construction"
+├── 5. SQLite     → "Option under construction"
+└── 0. Exit
+
+Redis Submenu
+
+Redis Menu
+│
+├── CRUD Operations
+│     1. Load & store all commits from file
+│     2. Read a specific commit by SHA
+│     3. Update a commit field
+│     4. Delete a commit by SHA
+│     5. List stored commit SHAs
+│
+├── Features
+│     6. Most active repositories
+│     7. Commit keyword frequency analysis
+│     8. Author contribution history
+│     9. Top contributors leaderboard
+│
+└── 0. Back to main menu
+
+MongoDB Submenu
+
+MongoDB Menu
+│
+├── CRUD Operations
+│     1. Load & store all repository documents from file
+│     2. Read repository by name
+│     3. Update repository fields
+│     4. Delete repository by name
+│
+├── Features
+│     5. Top watched repositories
+│     6. Language distribution analysis
+│     7. Repository activity summary (commits vs watch count)
+│
+└── 0. Back to main menu
+
+Part 1 — Redis Features
+
+CRUD Operations
+
+Create — Load commit records from Commits.json into Redis using pipelining for efficiency
+Read — Retrieve commits by SHA
+Update — Modify stored commit fields
+Delete — Remove commits by SHA
+List — Scan stored commit SHAs
+
+Analytical Features
+
+Feature 1 — Most Active Repositories
+Counts commits per repository and stores results in a Redis Sorted Set. Displays a ranked leaderboard.
+
+Feature 2 — Commit Keyword Frequency
+Analyzes the first word of commit subject lines (e.g. Fix, Add, Update) and stores frequency in a Sorted Set.
+
+Feature 3 — Author Contribution History
+Tracks author commit activity using Redis lists and sorted sets to show top contributors and history.
+
+Redis Data Model
+
+Key Pattern	Redis Type	Description
+commit:<sha>	String (JSON)	Full commit object
+ranking:repos	Sorted Set	Repository commit counts
+ranking:commit_keywords	Sorted Set	Commit keyword frequency
+author:<name>:commits	List	Commit history per author
+ranking:authors	Sorted Set	Author leaderboard
+
+Part 2 — MongoDB Features
+
+CRUD Operations
+
+Create — Insert repository documents into MongoDB collection
+Read — Query repositories by name, language, or metrics
+Update — Modify repository attributes (watch_count, commits, language)
+Delete — Remove repository documents by name
+
+Analytical Features
+
+Feature 1 — Top Watched Repositories
+Uses MongoDB aggregation pipeline to rank repositories by watch_count
+
+Feature 2 — Language Distribution
+Groups repositories by programming language and counts occurrences
+
+Feature 3 — Repository Activity Summary
+Compares commits vs watch_count to evaluate repository engagement
+
+MongoDB Data Model
+
+Collection: repositories
+
+Each document includes:
+- repo_name
+- watch_count
+- language
+- commits
+
+MongoDB Technology Stack
+
+- MongoDB 6.0+
+- PyMongo driver
+- Document-based NoSQL storage
+- Aggregation pipelines for analytics
+
+Dependencies
+
+Install required packages:
+
+pip install redis
+pip install pymongo
+
+Setup & Running the Application
+
+1. Start MongoDB and Redis servers
+
+Redis:
+redis-server
+
+MongoDB:
+mongod
+
+2. Run application
+
+python menu.py
+
+Recommended Workflow
+
+Redis:
+- Select option 1
+- Load Commits.json
+- Run analytics (options 6–9)
+
+MongoDB:
+- Select option 2
+- Load Sample_repos.json
+- Run CRUD and analytics features
+
+Team Members
+
+Christopher Crayton, Elvis Ngawe, Michael Winstead
+
+Notes
+
+- Redis uses JSON string storage with sorted sets for analytics
+- MongoDB uses document storage with aggregation pipelines
+- Both databases analyze related GitHub dataset structures but in different models
+- Future phases will add Cassandra, Neo4j, and SQLite implementations
