@@ -14,7 +14,7 @@ import mongodb_features
 
 
 # =====================================================
-# REDIS FUNCTIONS (UNCHANGED LOGIC)
+# REDIS FUNCTIONS 
 # =====================================================
 
 def display_top_repos(client, top_n=10):
@@ -134,7 +134,7 @@ def run_redis_menu(data_filepath="Project/data/Commits.json"):
 
 
 # =====================================================
-# MONGODB MENU (UPDATED FOR sample_repos.json)
+# MONGODB MENU 
 # =====================================================
 
 def run_mongodb_menu(data_filepath="Project/data/sample_repos.json"):
