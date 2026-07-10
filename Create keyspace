@@ -1,0 +1,26 @@
+def create_keyspace():
+
+    print("Creating Amazon keyspace...")
+
+    session.execute("""
+    CREATE KEYSPACE IF NOT EXISTS Amazon
+    WITH replication = {
+        'class': 'SimpleStrategy',
+        'replication_factor': 1
+    };
+    """)
+
+    # Verify it exists
+    rows = session.execute(
+        "SELECT keyspace_name FROM system_schema.keyspaces"
+    )
+
+    keyspaces = [row.keyspace_name for row in rows]
+
+    print("Available keyspaces:", keyspaces)
+
+    if "Amazon" in keyspaces:
+        session.set_keyspace("Amazon")
+        print("Amazon keyspace selected.")
+    else:
+        print("Amazon keyspace was NOT created.")
