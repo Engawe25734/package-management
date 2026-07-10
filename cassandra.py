@@ -1,0 +1,333 @@
+"""
+Name: elvis ngawe
+Assignment: Cassandra CRUD Assessment
+Date: July 10, 2026
+
+Purpose:
+This program demonstrates CRUD operations using Cassandra.
+It creates an Amazon keyspace, creates tables, loads JSON data,
+allows querying, updating, deleting, schema modification,
+and keyspace/table management.
+"""
+import json
+from cassandra.cluster import Cluster
+cluster = Cluster(['127.0.0.1'])
+session = cluster.connect()
+def create_keyspace():
+
+    session.execute("""
+    CREATE KEYSPACE IF NOT EXISTS Amazon
+    WITH replication = {
+        'class':'SimpleStrategy',
+        'replication_factor':1
+    }
+    """)
+
+    session.set_keyspace("Amazon")
+
+    print("Amazon keyspace created.")
+def create_reviews():
+
+    session.execute("""
+    CREATE TABLE IF NOT EXISTS Reviews(
+
+        review_id text PRIMARY KEY,
+        product_id text,
+        reviewer_id text,
+        stars int,
+        review_body text,
+        review_title text,
+        product_category text
+
+    )
+    """)
+def create_categories():
+
+    session.execute("""
+    CREATE TABLE IF NOT EXISTS ProductCategories(
+
+        product_id text PRIMARY KEY,
+        stars int,
+        language text,
+        product_category text
+
+    )
+    """)
+def load_json(filename):
+
+    with open(filename,"r",encoding="utf-8") as f:
+
+        data=json.load(f)
+
+    for item in data:
+
+        session.execute("""
+        INSERT INTO Reviews
+        (review_id,
+         product_id,
+         reviewer_id,
+         stars,
+         review_body,
+         review_title,
+         product_category)
+
+         VALUES (%s,%s,%s,%s,%s,%s,%s)
+        """,(
+
+            item["review_id"],
+            item["product_id"],
+            item["reviewer_id"],
+            int(item["stars"]),
+            item["review_body"],
+            item["review_title"],
+            item["product_category"]
+
+        ))
+
+
+        session.execute("""
+        INSERT INTO ProductCategories
+        (product_id,
+        stars,
+        language,
+        product_category)
+
+        VALUES(%s,%s,%s,%s)
+
+        """,(
+
+            item["product_id"],
+            int(item["stars"]),
+            item["language"],
+            item["product_category"]
+
+        ))
+
+    print("Data inserted.")
+def display_categories():
+
+    rows=session.execute("""
+
+    SELECT DISTINCT product_category
+    FROM ProductCategories
+
+    """)
+
+    print()
+
+    for row in rows:
+
+        print(row.product_category)
+def count_good_reviews():
+
+    category=input("Category: ")
+
+    rows=session.execute("""
+
+    SELECT stars
+    FROM Reviews
+    WHERE product_category=%s
+    ALLOW FILTERING
+
+    """,(category,))
+
+    count=0
+
+    for row in rows:
+
+        if row.stars>=4:
+            count+=1
+
+    print(count)
+def count_bad_reviews():
+
+    category=input("Category: ")
+
+    rows=session.execute("""
+
+    SELECT stars
+    FROM Reviews
+    WHERE product_category=%s
+    ALLOW FILTERING
+
+    """,(category,))
+
+    count=0
+
+    for row in rows:
+
+        if row.stars==1:
+            count+=1
+
+    print(count)
+def run_select():
+
+    query=input("Enter SELECT statement:\n")
+
+    if query.lower().startswith("select"):
+
+        rows=session.execute(query)
+
+        for row in rows:
+
+            print(row)
+
+    else:
+
+        print("Only SELECT statements allowed.")
+def add_column():
+
+    table=input("Table: ")
+
+    column=input("Column name: ")
+
+    datatype=input("Data type: ")
+
+    session.execute(
+
+        f"ALTER TABLE {table} ADD {column} {datatype}"
+
+    )
+
+    print("Column added.")
+def remove_column():
+
+    table=input("Table: ")
+
+    column=input("Column name: ")
+
+    session.execute(
+
+        f"ALTER TABLE {table} DROP {column}"
+
+    )
+
+    print("Column removed.")
+def update_review():
+
+    review=input("Review ID: ")
+
+    stars=int(input("New stars: "))
+
+    session.execute("""
+
+    UPDATE Reviews
+
+    SET stars=%s
+
+    WHERE review_id=%s
+
+    """,(stars,review))
+
+    print("Updated.")
+def read_review():
+
+    review=input("Review ID: ")
+
+    rows=session.execute("""
+
+    SELECT *
+
+    FROM Reviews
+
+    WHERE review_id=%s
+
+    """,(review,))
+
+    for row in rows:
+
+        print(row)
+def delete_review():
+
+    review=input("Review ID: ")
+
+    session.execute("""
+
+    DELETE FROM Reviews
+
+    WHERE review_id=%s
+
+    """,(review,))
+
+    print("Deleted.")
+def delete_tables():
+
+    session.execute("DROP TABLE IF EXISTS Reviews")
+
+    session.execute("DROP TABLE IF EXISTS ProductCategories")
+
+    print("Tables deleted.")
+def delete_keyspace():
+
+    session.set_keyspace(None)
+
+    session.execute("DROP KEYSPACE IF EXISTS Amazon")
+
+    print("Keyspace deleted.")
+while True:
+
+    print("""
+1 Create Keyspace
+2 Create Tables
+3 Load JSON
+4 Product Categories
+5 Count 4-Star Reviews
+6 Count 1-Star Reviews
+7 Execute SELECT
+8 Add Column
+9 Remove Column
+10 Delete Tables
+11 Delete Keyspace
+12 Update Review
+13 Delete Review
+14 Read Review
+0 Exit
+""")
+
+    choice=input("Choice: ")
+
+    if choice=="1":
+        create_keyspace()
+
+    elif choice=="2":
+        create_reviews()
+        create_categories()
+
+    elif choice=="3":
+        load_json("amazon_reviews.json")
+
+    elif choice=="4":
+        display_categories()
+
+    elif choice=="5":
+        count_good_reviews()
+
+    elif choice=="6":
+        count_bad_reviews()
+
+    elif choice=="7":
+        run_select()
+
+    elif choice=="8":
+        add_column()
+
+    elif choice=="9":
+        remove_column()
+
+    elif choice=="10":
+        delete_tables()
+
+    elif choice=="11":
+        delete_keyspace()
+
+    elif choice=="12":
+        update_review()
+
+    elif choice=="13":
+        delete_review()
+
+    elif choice=="14":
+        read_review()
+
+    elif choice=="0":
+        break
