@@ -1,0 +1,14 @@
+MATCH (c1:Course {name:'C1'})
+MATCH (c2:Course {name:'C2'})
+MATCH (c3:Course {name:'C3'})
+MATCH (s1:Student {name:'S1'}) WITH c1,c2,c3, head(collect(s1)) AS s1
+MATCH (s2:Student {name:'S2'}) WITH c1,c2,c3,s1, head(collect(s2)) AS s2
+MATCH (s3:Student {name:'S3'}) WITH c1,c2,c3,s1,s2, head(collect(s3)) AS s3
+MATCH (s4:Student {name:'S4'}) WITH c1,c2,c3,s1,s2,s3, head(collect(s4)) AS s4
+MATCH (s5:Student {name:'S5'}) WITH c1,c2,c3,s1,s2,s3,s4, head(collect(s5)) AS s5
+CREATE
+(s1)-[:ENROLLED]->(c1),
+(s2)-[:ENROLLED]->(c1),
+(s3)-[:ENROLLED]->(c1),
+(s4)-[:ENROLLED]->(c1),
+(s5)-[:ENROLLED]->(c1);
