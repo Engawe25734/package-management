@@ -1,0 +1,108 @@
+CREATE
+(:Course {
+    name:'C1',
+    courseName:'Database Systems',
+    creditHours:3,
+    termOffered:'Fall'
+}),
+(:Course {
+    name:'C2',
+    courseName:'Python Programming',
+    creditHours:4,
+    termOffered:'Spring'
+}),
+(:Course {
+    name:'C3',
+    courseName:'Data Structures',
+    creditHours:3,
+    termOffered:'Summer'
+});
+
+
+=================
+CREATE
+(:Instructor {
+    name:'John Smith',
+    department:'Computer Science',
+    email:'john.smith@college.edu'
+}),
+(:Instructor {
+    name:'Mary Johnson',
+    department:'Information Technology',
+    email:'mary.johnson@college.edu'
+});
+======================
+CREATE
+(:Student {name:'S1', firstName:'James', lastName:'Brown', degreeProgram:'Computer Science'}),
+(:Student {name:'S2', firstName:'Emma', lastName:'Wilson', degreeProgram:'Computer Science'}),
+(:Student {name:'S3', firstName:'Noah', lastName:'Taylor', degreeProgram:'Information Technology'}),
+(:Student {name:'S4', firstName:'Olivia', lastName:'Thomas', degreeProgram:'Cybersecurity'}),
+(:Student {name:'S5', firstName:'Liam', lastName:'Moore', degreeProgram:'Computer Science'}),
+(:Student {name:'S6', firstName:'Sophia', lastName:'Martin', degreeProgram:'Information Technology'}),
+(:Student {name:'S7', firstName:'Mason', lastName:'Lee', degreeProgram:'Cybersecurity'}),
+(:Student {name:'S8', firstName:'Ava', lastName:'White', degreeProgram:'Computer Science'}),
+(:Student {name:'S9', firstName:'Lucas', lastName:'Hall', degreeProgram:'Data Science'}),
+(:Student {name:'S10', firstName:'Mia', lastName:'Young', degreeProgram:'Information Technology'});
+============================
+MATCH (c1:Course {name:'C1'}),
+      (c2:Course {name:'C2'}),
+      (c3:Course {name:'C3'}),
+      (s1:Student {name:'S1'}),
+      (s2:Student {name:'S2'}),
+      (s3:Student {name:'S3'}),
+      (s4:Student {name:'S4'}),
+      (s5:Student {name:'S5'}),
+      (s6:Student {name:'S6'}),
+      (s7:Student {name:'S7'}),
+      (s8:Student {name:'S8'}),
+      (s9:Student {name:'S9'}),
+      (s10:Student {name:'S10'})
+CREATE
+(s1)-[:ENROLLED]->(c1),
+(s2)-[:ENROLLED]->(c1),
+(s3)-[:ENROLLED]->(c1),
+(s4)-[:ENROLLED]->(c1),
+(s5)-[:ENROLLED]->(c1),
+
+
+(s2)-[:ENROLLED]->(c2),
+(s4)-[:ENROLLED]->(c2),
+(s6)-[:ENROLLED]->(c2),
+(s8)-[:ENROLLED]->(c2),
+(s10)-[:ENROLLED]->(c2),
+
+(s1)-[:ENROLLED]->(c3),
+(s5)-[:ENROLLED]->(c3),
+(s7)-[:ENROLLED]->(c3),
+(s9)-[:ENROLLED]->(c3),
+(s10)-[:ENROLLED]->(c3);
+========================
+MATCH
+(i1:Instructor {name:'John Smith'}),
+(i2:Instructor {name:'Mary Johnson'}),
+(c1:Course {name:'C1'}),
+(c2:Course {name:'C2'}),
+(c3:Course {name:'C3'})
+CREATE
+(i1)-[:TEACHING]->(c1),
+(i2)-[:TEACHING]->(c2),
+(i1)-[:TEACHING]->(c3);
+==========================
+MATCH (n)
+RETURN n;
+=======================
+MATCH (c:Course {name:'C2'})-[r]-()
+DELETE r;
+===============================
+MATCH (c:Course {name:'C2'})
+DELETE c;
+===============================
+MATCH (n)
+RETURN n;
+===================
+MATCH ()-[r]-()
+DELETE r;
+==================
+MATCH (n)
+DELETE n;
+
