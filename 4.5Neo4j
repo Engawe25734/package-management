@@ -1,0 +1,414 @@
+"""
+Name: Elvis Ngawe
+Date: July 16, 2026
+Assignment: Neo4j CRUD Application
+Purpose:
+This program creates, reads, updates, and deletes data in a Neo4j
+graph database using Python. It imports Amazon review JSON data,
+creates nodes and relationships, and allows the user to perform
+CRUD operations through a menu.
+"""
+
+from neo4j import GraphDatabase
+import json
+
+
+# -------------------------------
+# Neo4j Database Connection
+# -------------------------------
+
+URI = "bolt://localhost:7687"
+USERNAME = "neo4j"
+PASSWORD = "your_password_here"
+
+driver = GraphDatabase.driver(
+    URI,
+    auth=(USERNAME, PASSWORD)
+)
+
+
+# -------------------------------
+# Create nodes and relationships
+# from imported JSON data
+# -------------------------------
+
+def import_json(filename):
+
+    with open(filename, "r", encoding="utf-8") as file:
+        data = file.readlines()
+
+    with driver.session() as session:
+
+        for line in data:
+
+            review = json.loads(line)
+
+            # Create Category node
+            session.run("""
+            MERGE (c:Category {name:$category})
+            """,
+            category=review["product_category"])
+
+
+            # Create Product node
+            session.run("""
+            MERGE (p:Product {name:$product})
+            """,
+            product=review["product_id"])
+
+
+            # Create Review node
+            session.run("""
+            CREATE (r:Review {
+                title:$title,
+                content:$content,
+                stars:$stars
+            })
+            """,
+            title=review["review_title"],
+            content=review["review_body"],
+            stars=review["stars"])
+
+
+            # Create Reviewer node
+            session.run("""
+            MERGE (rv:Reviewer {name:$reviewer})
+            """,
+            reviewer=review["reviewer_id"])
+
+
+            # Create Reviewer -> Review relationship
+            session.run("""
+            MATCH (rv:Reviewer {name:$reviewer}),
+                  (r:Review {title:$title})
+            CREATE (rv)-[:WROTE]->(r)
+            """,
+            reviewer=review["reviewer_id"],
+            title=review["review_title"])
+
+
+            # Create Product -> Review relationship
+            session.run("""
+            MATCH (p:Product {name:$product}),
+                  (r:Review {title:$title})
+            CREATE (p)-[:HAS_REVIEW]->(r)
+            """,
+            product=review["product_id"],
+            title=review["review_title"])
+
+
+            # Create Product -> Category relationship
+            session.run("""
+            MATCH (p:Product {name:$product}),
+                  (c:Category {name:$category})
+            CREATE (p)-[:BELONGS_TO]->(c)
+            """,
+            product=review["product_id"],
+            category=review["product_category"])
+
+
+    print("JSON data imported successfully.")
+
+
+
+# -------------------------------
+# Create custom nodes
+# -------------------------------
+
+def create_node():
+
+    label = input(
+        "Enter node type (Category/Product/Review/Reviewer): "
+    )
+
+    with driver.session() as session:
+
+        if label == "Category":
+
+            name=input("Enter category name: ")
+
+            session.run("""
+            CREATE (:Category {name:$name})
+            """, name=name)
+
+
+        elif label == "Product":
+
+            name=input("Enter product name: ")
+
+            session.run("""
+            CREATE (:Product {name:$name})
+            """, name=name)
+
+
+        elif label == "Reviewer":
+
+            name=input("Enter reviewer id: ")
+
+            session.run("""
+            CREATE (:Reviewer {name:$name})
+            """, name=name)
+
+
+        elif label == "Review":
+
+            title=input("Enter review title: ")
+            content=input("Enter review content: ")
+            stars=input("Enter stars: ")
+
+            session.run("""
+            CREATE (:Review {
+                title:$title,
+                content:$content,
+                stars:$stars
+            })
+            """,
+            title=title,
+            content=content,
+            stars=stars)
+
+        else:
+            print("Invalid node type.")
+
+    print("Node created.")
+
+
+
+# -------------------------------
+# Create relationships manually
+# -------------------------------
+
+def create_relationship():
+
+    choice=input(
+    "1. Product-Category\n"
+    "2. Product-Review\n"
+    "Choice: ")
+
+    with driver.session() as session:
+
+        if choice=="1":
+
+            product=input("Product name: ")
+            category=input("Category name: ")
+
+            session.run("""
+            MATCH (p:Product {name:$product}),
+                  (c:Category {name:$category})
+            CREATE (p)-[:BELONGS_TO]->(c)
+            """,
+            product=product,
+            category=category)
+
+
+        elif choice=="2":
+
+            product=input("Product name: ")
+            title=input("Review title: ")
+
+            session.run("""
+            MATCH (p:Product {name:$product}),
+                  (r:Review {title:$title})
+            CREATE (p)-[:HAS_REVIEW]->(r)
+            """,
+            product=product,
+            title=title)
+
+
+    print("Relationship created.")
+
+
+
+# -------------------------------
+# Read operations
+# -------------------------------
+
+def count_products():
+
+    category=input("Enter category name: ")
+
+    with driver.session() as session:
+
+        result=session.run("""
+        MATCH (p:Product)-[:BELONGS_TO]->
+        (c:Category {name:$category})
+        RETURN count(p) AS total
+        """,
+        category=category)
+
+        print(
+        "Products:",
+        result.single()["total"]
+        )
+
+
+
+def count_reviews():
+
+    reviewer=input("Enter reviewer id: ")
+
+    with driver.session() as session:
+
+        result=session.run("""
+        MATCH (rv:Reviewer {name:$reviewer})
+        -[:WROTE]->(r:Review)
+        RETURN count(r) AS total
+        """,
+        reviewer=reviewer)
+
+
+        print(
+        "Reviews:",
+        result.single()["total"]
+        )
+
+
+
+# -------------------------------
+# Update operation
+# -------------------------------
+
+def update_review():
+
+    title=input("Review title to update: ")
+    new_content=input("New content: ")
+
+    with driver.session() as session:
+
+        session.run("""
+        MATCH (r:Review {title:$title})
+        SET r.content=$content
+        """,
+        title=title,
+        content=new_content)
+
+
+    print("Review updated.")
+
+
+
+# -------------------------------
+# Delete Category
+# -------------------------------
+
+def delete_category():
+
+    category=input(
+    "Enter category name to delete: ")
+
+    with driver.session() as session:
+
+        session.run("""
+        MATCH (c:Category {name:$category})
+        DETACH DELETE c
+        """,
+        category=category)
+
+
+    print("Category deleted.")
+
+
+
+# -------------------------------
+# Delete all relationships
+# -------------------------------
+
+def delete_relationships():
+
+    with driver.session() as session:
+
+        session.run("""
+        MATCH ()-[r]-()
+        DELETE r
+        """)
+
+    print("All relationships deleted.")
+
+
+
+# -------------------------------
+# Delete all nodes
+# -------------------------------
+
+def delete_nodes():
+
+    with driver.session() as session:
+
+        session.run("""
+        MATCH (n)
+        DELETE n
+        """)
+
+    print("All nodes deleted.")
+
+
+
+# -------------------------------
+# Main Menu
+# -------------------------------
+
+def menu():
+
+    while True:
+
+        print("""
+==============================
+ Neo4j CRUD Application
+==============================
+
+1. Import JSON data
+2. Create custom node
+3. Create relationship
+4. Count products by category
+5. Count reviews by reviewer
+6. Update review
+7. Delete category
+8. Delete all relationships
+9. Delete all nodes
+10. Exit
+
+""")
+
+        choice=input("Select option: ")
+
+
+        if choice=="1":
+            import_json("amazon_reviews.json")
+
+        elif choice=="2":
+            create_node()
+
+        elif choice=="3":
+            create_relationship()
+
+        elif choice=="4":
+            count_products()
+
+        elif choice=="5":
+            count_reviews()
+
+        elif choice=="6":
+            update_review()
+
+        elif choice=="7":
+            delete_category()
+
+        elif choice=="8":
+            delete_relationships()
+
+        elif choice=="9":
+            delete_nodes()
+
+        elif choice=="10":
+            driver.close()
+            print("Program ended.")
+            break
+
+        else:
+            print("Invalid choice.")
+
+
+
+# Start program
+
+menu()
