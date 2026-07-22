@@ -1,4 +1,3 @@
-```python
 """
 Name: Elvis Ngawe
 Date: July 22, 2026
