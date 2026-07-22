@@ -21,7 +21,6 @@ def load_json_data(db):
     try:
 
         with open(filename, "r", encoding="utf-8") as file:
-
             data = json.load(file)
 
 
@@ -36,8 +35,11 @@ def load_json_data(db):
         for item in data:
 
 
-            # Create ReviewData document
+            # Convert stars from string to integer
+            stars = int(item.get("stars", 0))
 
+
+            # ReviewData document
             review = {
 
                 "review_id": item.get("review_id"),
@@ -46,14 +48,16 @@ def load_json_data(db):
 
                 "reviewer_id": item.get("reviewer_id"),
 
-                "stars": item.get("stars"),
+                "stars": stars,
 
                 "review_title": item.get("review_title"),
 
                 "review_body": item.get("review_body"),
 
-                "product_category":
-                    item.get("product_category")
+                "language": item.get("language"),
+
+                "product_category": item.get("product_category")
+
             }
 
 
@@ -61,18 +65,14 @@ def load_json_data(db):
 
 
 
-            # Create ProductData document
-
+            # ProductData document
             product = {
 
-                "product_id":
-                    item.get("product_id"),
+                "product_id": item.get("product_id"),
 
                 "product_category":
-                    item.get("product_category"),
+                    item.get("product_category")
 
-                "product_title":
-                    item.get("product_title")
             }
 
 
@@ -94,26 +94,21 @@ def load_json_data(db):
             )
 
 
-        print("\n[OK] JSON data loaded")
-        print("[OK] Reviews inserted:", len(reviews))
-        print("[OK] Products inserted:", len(products))
-
+        print("\n================================")
+        print("[OK] JSON IMPORT COMPLETE")
+        print("================================")
+        print("Reviews loaded:", len(reviews))
+        print("Products loaded:", len(products))
 
 
     except FileNotFoundError:
 
-        print("\n[ERROR] dataset_en_dev.json not found.")
-
+        print("\n[ERROR] dataset_en_dev.json not found")
 
 
     except Exception as error:
 
         print("\n[ERROR]", error)
-
-
-
-
-
 # ============================================================
 # INSERT NEW REVIEW
 # ============================================================
@@ -180,8 +175,8 @@ def insert_product(db):
             input("Category: "),
 
 
-        "product_title":
-            input("Product Title: ")
+        "product_name":
+            input("Product Name: ")
 
     }
 
