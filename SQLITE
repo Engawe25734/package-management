@@ -1,0 +1,480 @@
+"""
+Name: Elvis Ngawe
+Date: July 21, 2026
+Assignment: SQLite CRUD Application
+Purpose:
+    This program creates and manages an SQLite database named
+    EN_ReviewData. It demonstrates CRUD operations using sqlite3,
+    including creating tables, loading JSON data, querying data,
+    inserting records, and deleting records.
+"""
+
+import sqlite3
+import json
+
+
+DATABASE = "EN_ReviewData.db"
+
+
+# ------------------------------------------------------------
+# CREATE DATABASE CONNECTION
+# ------------------------------------------------------------
+
+def connect_database():
+    """
+    Connects to SQLite database.
+    Creates EN_ReviewData if it does not exist.
+    """
+
+    connection = sqlite3.connect(DATABASE)
+
+    # Enable foreign key support
+    connection.execute("PRAGMA foreign_keys = ON")
+
+    return connection
+
+
+
+# ------------------------------------------------------------
+# CREATE TABLES
+# ------------------------------------------------------------
+
+def create_tables():
+
+    conn = connect_database()
+    cursor = conn.cursor()
+
+    # Create Reviewers table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS Reviewers(
+        reviewer_id INTEGER PRIMARY KEY,
+        reviewer_name TEXT
+    )
+    """)
+
+
+    # Create Categories table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS Categories(
+        product_category TEXT PRIMARY KEY
+    )
+    """)
+
+
+    # Create Products table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS Products(
+        product_id INTEGER PRIMARY KEY,
+        product_category TEXT,
+        FOREIGN KEY(product_category)
+        REFERENCES Categories(product_category)
+    )
+    """)
+
+
+    # Create Reviews table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS Reviews(
+        review_id INTEGER PRIMARY KEY,
+        product_id INTEGER,
+        reviewer_id INTEGER,
+        stars INTEGER,
+        review_body TEXT,
+        review_title TEXT,
+
+        FOREIGN KEY(product_id)
+        REFERENCES Products(product_id),
+
+        FOREIGN KEY(reviewer_id)
+        REFERENCES Reviewers(reviewer_id)
+    )
+    """)
+
+
+    conn.commit()
+    conn.close()
+
+    print("\nTables created successfully.")
+
+
+
+# ------------------------------------------------------------
+# INSERT JSON DATA
+# ------------------------------------------------------------
+
+def load_json_data():
+
+    filename = input("Enter JSON filename: ")
+
+    try:
+
+        with open(filename, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+
+        conn = connect_database()
+        cursor = conn.cursor()
+
+
+        for item in data:
+
+
+            # Insert reviewer
+            cursor.execute("""
+            INSERT OR IGNORE INTO Reviewers
+            VALUES (?,?)
+            """,
+            (
+                item.get("reviewer_id"),
+                item.get("reviewer_name","Unknown")
+            ))
+
+
+
+            # Insert category
+            cursor.execute("""
+            INSERT OR IGNORE INTO Categories
+            VALUES (?)
+            """,
+            (
+                item.get("product_category"),
+            ))
+
+
+
+            # Insert product
+            cursor.execute("""
+            INSERT OR IGNORE INTO Products
+            VALUES (?,?)
+            """,
+            (
+                item.get("product_id"),
+                item.get("product_category")
+            ))
+
+
+
+            # Insert review
+            cursor.execute("""
+            INSERT OR IGNORE INTO Reviews
+            VALUES (?,?,?,?,?,?)
+            """,
+            (
+                item.get("review_id"),
+                item.get("product_id"),
+                item.get("reviewer_id"),
+                item.get("stars"),
+                item.get("review_body"),
+                item.get("review_title")
+            ))
+
+
+
+        conn.commit()
+        conn.close()
+
+        print("\nJSON data successfully loaded.")
+
+
+    except FileNotFoundError:
+
+        print("\nFile not found.")
+
+
+
+# ------------------------------------------------------------
+# DISPLAY CATEGORIES BY PRODUCT COUNT
+# ------------------------------------------------------------
+
+def category_product_count():
+
+    minimum = int(
+        input("Minimum number of products: ")
+    )
+
+
+    conn = connect_database()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+    SELECT product_category,
+           COUNT(product_id)
+    FROM Products
+    GROUP BY product_category
+    HAVING COUNT(product_id) >= ?
+    """,
+    (minimum,))
+
+
+    results = cursor.fetchall()
+
+
+    print("\nCategories:")
+    
+    for row in results:
+        print(row)
+
+
+    conn.close()
+
+
+
+# ------------------------------------------------------------
+# EXECUTE USER SQL SELECT STATEMENT
+# ------------------------------------------------------------
+
+def execute_select():
+
+    query = input(
+        "\nEnter SELECT SQL statement:\n"
+    )
+
+
+    conn = connect_database()
+    cursor = conn.cursor()
+
+
+    try:
+
+        cursor.execute(query)
+
+        rows = cursor.fetchall()
+
+
+        for row in rows:
+            print(row)
+
+
+    except Exception as error:
+
+        print(error)
+
+
+    conn.close()
+
+
+
+# ------------------------------------------------------------
+# INSERT ROW INTO ANY TABLE
+# ------------------------------------------------------------
+
+def insert_row():
+
+    table = input(
+        "Enter table name: "
+    )
+
+
+    values = input(
+        "Enter values separated by commas: "
+    )
+
+
+    values = values.split(",")
+
+
+    conn = connect_database()
+    cursor = conn.cursor()
+
+
+    try:
+
+        placeholders = ",".join(
+            ["?"] * len(values)
+        )
+
+
+        sql = f"""
+        INSERT INTO {table}
+        VALUES ({placeholders})
+        """
+
+
+        cursor.execute(
+            sql,
+            values
+        )
+
+
+        conn.commit()
+
+        print("Row inserted.")
+
+
+    except Exception as error:
+
+        print(error)
+
+
+    conn.close()
+
+
+
+# ------------------------------------------------------------
+# DELETE REVIEWS BY CATEGORY
+# ------------------------------------------------------------
+
+def delete_reviews_by_category():
+
+    category = input(
+        "Enter product category: "
+    )
+
+
+    conn = connect_database()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+    DELETE FROM Reviews
+    WHERE product_id IN
+    (
+        SELECT product_id
+        FROM Products
+        WHERE product_category = ?
+    )
+    """,
+    (category,))
+
+
+    conn.commit()
+
+
+    print(
+        cursor.rowcount,
+        "reviews deleted."
+    )
+
+
+    conn.close()
+
+
+
+# ------------------------------------------------------------
+# DELETE ALL TABLES
+# ------------------------------------------------------------
+
+def delete_all_tables():
+
+    conn = connect_database()
+    cursor = conn.cursor()
+
+
+    tables = [
+        "Reviews",
+        "Products",
+        "Categories",
+        "Reviewers"
+    ]
+
+
+    for table in tables:
+
+        cursor.execute(
+            f"DROP TABLE IF EXISTS {table}"
+        )
+
+
+    conn.commit()
+    conn.close()
+
+
+    print(
+        "\nAll tables deleted."
+    )
+
+
+
+# ------------------------------------------------------------
+# DISPLAY MENU
+# ------------------------------------------------------------
+
+def menu():
+
+    while True:
+
+
+        print("""
+==============================
+ SQLite Review Database
+==============================
+
+1. Create Tables
+2. Load JSON Data
+3. Display Categories By Product Count
+4. Execute SELECT Statement
+5. Insert Row
+6. Delete Reviews By Category
+7. Delete All Tables
+0. Exit
+
+==============================
+""")
+
+
+        choice = input(
+            "Enter choice: "
+        )
+
+
+
+        if choice == "1":
+
+            create_tables()
+
+
+        elif choice == "2":
+
+            load_json_data()
+
+
+        elif choice == "3":
+
+            category_product_count()
+
+
+        elif choice == "4":
+
+            execute_select()
+
+
+        elif choice == "5":
+
+            insert_row()
+
+
+        elif choice == "6":
+
+            delete_reviews_by_category()
+
+
+        elif choice == "7":
+
+            delete_all_tables()
+
+
+        elif choice == "0":
+
+            print(
+                "Program ended."
+            )
+
+            break
+
+
+        else:
+
+            print(
+                "Invalid selection."
+            )
+
+
+
+# ------------------------------------------------------------
+# PROGRAM START
+# ------------------------------------------------------------
+
+if __name__ == "__main__":
+
+    menu()
