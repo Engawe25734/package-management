@@ -1,0 +1,913 @@
+// =====================================
+// FILE UPLOAD
+// Matches server.py /upload
+// =====================================
+
+
+async function uploadFile(){
+
+
+    const file =
+    document
+    .getElementById("file")
+    .files[0];
+
+
+
+    if(!file){
+
+        return;
+
+    }
+
+
+
+
+    const formData =
+    new FormData();
+
+
+
+    formData.append(
+
+        "file",
+
+        file
+
+    );
+
+
+
+
+    const response =
+    await fetch(
+
+        `${API_URL}/upload`,
+
+        {
+
+            method:"POST",
+
+            body:formData
+
+        }
+
+    );
+
+
+
+
+    const data =
+    await response.json();
+
+
+
+
+    socket.send(
+
+        JSON.stringify({
+
+            type:"file",
+
+            receiver:selectedUser,
+
+            filename:data.filename,
+
+            url:data.url,
+
+            file_type:data.type
+
+
+        })
+
+    );
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// EMOJI FUNCTIONS
+// =====================================
+
+
+function toggleEmoji(){
+
+
+    document
+    .getElementById("emoji-panel")
+    .classList
+    .toggle("hidden");
+
+
+}
+
+
+
+
+function addEmoji(emoji){
+
+
+    document
+    .getElementById("message")
+    .value += emoji;
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// DARK MODE
+// =====================================
+
+
+function toggleTheme(){
+
+
+    document
+    .body
+    .classList
+    .toggle("dark");
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// GROUP CALL
+// =====================================
+
+
+function createGroupCall(){
+
+
+    document
+    .getElementById("group-call-modal")
+    .classList
+    .remove("hidden");
+
+
+}
+
+
+
+
+
+
+function joinGroupCall(){
+
+
+    const room =
+    document
+    .getElementById("roomId")
+    .value
+    .trim();
+
+
+
+    if(!room){
+
+        return;
+
+    }
+
+
+
+
+    socket.send(
+
+        JSON.stringify({
+
+            type:"join_call",
+
+            room:room
+
+        })
+
+    );
+
+
+
+}
+
+
+
+
+
+
+function closeModal(){
+
+
+    document
+    .getElementById("group-call-modal")
+    .classList
+    .add("hidden");
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// WEBRTC AUDIO / VIDEO CALLING
+// =====================================
+
+
+let peerConnection = null;
+
+
+
+
+const rtcConfig = {
+
+
+    iceServers:[
+
+
+        {
+
+            urls:
+            "stun:stun.l.google.com:19302"
+
+        }
+
+
+    ]
+
+
+};
+
+
+
+
+
+
+
+
+
+// ===============================
+// CREATE PEER CONNECTION
+// ===============================
+
+
+function createPeerConnection(){
+
+
+    peerConnection =
+    new RTCPeerConnection(
+
+        rtcConfig
+
+    );
+
+
+
+
+
+    peerConnection.onicecandidate =
+    function(event){
+
+
+        if(event.candidate){
+
+
+            socket.send(
+
+                JSON.stringify({
+
+                    type:"candidate",
+
+                    receiver:selectedUser,
+
+                    candidate:event.candidate
+
+
+                })
+
+            );
+
+
+        }
+
+
+    };
+
+
+
+
+
+
+
+    peerConnection.ontrack =
+    function(event){
+
+
+        document
+        .getElementById("remoteVideo")
+        .srcObject =
+        event.streams[0];
+
+
+    };
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// START AUDIO CALL
+// ===============================
+
+
+async function startAudioCall(){
+
+
+
+    if(!selectedUser){
+
+
+        alert(
+            "Select a user first"
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+    createPeerConnection();
+
+
+
+
+
+    localStream =
+    await navigator
+    .mediaDevices
+    .getUserMedia({
+
+        audio:true
+
+    });
+
+
+
+
+
+    localStream
+    .getTracks()
+    .forEach(track=>{
+
+
+        peerConnection.addTrack(
+
+            track,
+
+            localStream
+
+        );
+
+
+    });
+
+
+
+
+
+    const offer =
+    await peerConnection
+    .createOffer();
+
+
+
+
+    await peerConnection
+    .setLocalDescription(
+
+        offer
+
+    );
+
+
+
+
+
+
+    socket.send(
+
+        JSON.stringify({
+
+            type:"offer",
+
+            receiver:selectedUser,
+
+            offer:offer
+
+
+        })
+
+    );
+
+
+
+
+
+    document
+    .getElementById("call-area")
+    .classList
+    .remove("hidden");
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// START VIDEO CALL
+// ===============================
+
+
+async function startVideoCall(){
+
+
+
+    if(!selectedUser){
+
+
+        alert(
+            "Select a user first"
+        );
+
+
+        return;
+
+    }
+
+
+
+
+
+    createPeerConnection();
+
+
+
+
+
+
+    localStream =
+    await navigator
+    .mediaDevices
+    .getUserMedia({
+
+        video:true,
+
+        audio:true
+
+
+    });
+
+
+
+
+
+
+    document
+    .getElementById("localVideo")
+    .srcObject =
+    localStream;
+
+
+
+
+
+
+    localStream
+    .getTracks()
+    .forEach(track=>{
+
+
+        peerConnection.addTrack(
+
+            track,
+
+            localStream
+
+        );
+
+
+    });
+
+
+
+
+
+
+    const offer =
+    await peerConnection
+    .createOffer();
+
+
+
+
+
+
+    await peerConnection
+    .setLocalDescription(
+
+        offer
+
+    );
+
+
+
+
+
+
+
+    socket.send(
+
+        JSON.stringify({
+
+            type:"offer",
+
+            receiver:selectedUser,
+
+            offer:offer
+
+
+        })
+
+    );
+
+
+
+
+
+
+    document
+    .getElementById("call-area")
+    .classList
+    .remove("hidden");
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// RECEIVE OFFER
+// ===============================
+
+
+async function receiveOffer(data){
+
+
+
+    createPeerConnection();
+
+
+
+
+
+
+    localStream =
+    await navigator
+    .mediaDevices
+    .getUserMedia({
+
+        video:true,
+
+        audio:true
+
+
+    });
+
+
+
+
+
+
+    document
+    .getElementById("localVideo")
+    .srcObject =
+    localStream;
+
+
+
+
+
+
+
+    localStream
+    .getTracks()
+    .forEach(track=>{
+
+
+        peerConnection.addTrack(
+
+            track,
+
+            localStream
+
+        );
+
+
+    });
+
+
+
+
+
+
+
+    await peerConnection
+    .setRemoteDescription(
+
+        new RTCSessionDescription(
+
+            data.offer
+
+        )
+
+    );
+
+
+
+
+
+
+    const answer =
+    await peerConnection
+    .createAnswer();
+
+
+
+
+
+
+    await peerConnection
+    .setLocalDescription(
+
+        answer
+
+    );
+
+
+
+
+
+
+    socket.send(
+
+        JSON.stringify({
+
+            type:"answer",
+
+            receiver:data.sender,
+
+            answer:answer
+
+
+        })
+
+    );
+
+
+
+
+
+    document
+    .getElementById("call-area")
+    .classList
+    .remove("hidden");
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// RECEIVE ANSWER
+// ===============================
+
+
+async function receiveAnswer(data){
+
+
+
+    await peerConnection
+    .setRemoteDescription(
+
+        new RTCSessionDescription(
+
+            data.answer
+
+        )
+
+    );
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// RECEIVE ICE CANDIDATE
+// ===============================
+
+
+async function receiveCandidate(data){
+
+
+
+    if(peerConnection){
+
+
+        await peerConnection
+        .addIceCandidate(
+
+            new RTCIceCandidate(
+
+                data.candidate
+
+            )
+
+        );
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// END CALL
+// ===============================
+
+
+function endCall(){
+
+
+
+    if(localStream){
+
+
+        localStream
+        .getTracks()
+        .forEach(track=>{
+
+
+            track.stop();
+
+
+        });
+
+
+    }
+
+
+
+
+
+
+    if(peerConnection){
+
+
+        peerConnection.close();
+
+
+        peerConnection=null;
+
+
+    }
+
+
+
+
+
+
+    document
+    .getElementById("call-area")
+    .classList
+    .add("hidden");
+
+
+
+
+
+
+    socket.send(
+
+        JSON.stringify({
+
+            type:"end_call",
+
+            receiver:selectedUser
+
+
+        })
+
+    );
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// AUTO LOGIN SESSION RESTORE
+// =====================================
+
+
+window.onload=function(){
+
+
+
+    if(username){
+
+
+        openChat();
+
+
+    }
+
+
+};
