@@ -1,0 +1,32 @@
+socket.onmessage = async function(event){
+
+    const data = JSON.parse(event.data);
+
+
+    if(data.type==="message"){
+
+
+        displayMessage({
+
+            sender:data.sender,
+
+            message:data.message
+
+        });
+
+
+
+        showNotification(
+
+            data.sender,
+
+            data.message
+
+        );
+
+
+    }
+
+
+
+};
