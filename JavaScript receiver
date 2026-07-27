@@ -1,0 +1,23 @@
+if(data.type==="message"){
+
+
+    const decrypted =
+    await decryptMessage(
+
+        data.message,
+
+        privateKey
+
+    );
+
+
+    displayMessage({
+
+        sender:data.sender,
+
+        message:decrypted
+
+    });
+
+
+}
