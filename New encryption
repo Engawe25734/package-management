@@ -1,0 +1,28 @@
+<div class="conversation-header">
+
+
+<div>
+
+<h3 id="chatUser">
+
+Select User
+
+</h3>
+
+
+<span id="typing">
+
+</span>
+
+</div>
+
+
+
+<span id="encryption-status">
+
+🔒 End-to-End Encrypted
+
+</span>
+
+
+</div>
