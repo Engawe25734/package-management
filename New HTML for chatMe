@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ChatMe</title>
+
+
+<link rel="stylesheet" href="/static/style.css">
+
+
+</head>
+
+
+<body>
+
+
+<div class="app-container">
+
+
+<!-- =========================
+AUTH PAGE
+========================= -->
+
+
+<section id="auth-page" class="auth-container">
+
+
+<div class="auth-card">
+
+
+<div class="app-logo">
+💬
+</div>
+
+
+<h1>
+ChatMe
+</h1>
+
+
+<p>
+Connect with friends instantly
+</p>
+
+
+
+
+<div class="input-group">
+
+<label>
+Username
+</label>
+
+<input
+id="username"
+type="text"
+placeholder="Username (register only)"
+>
+
+</div>
+
+
+
+
+
+<div class="input-group">
+
+<label>
+Phone Number
+</label>
+
+<input
+id="phone"
+type="text"
+placeholder="Phone number"
+>
+
+</div>
+
+
+
+
+
+<div class="input-group">
+
+<label>
+Password
+</label>
+
+<input
+id="password"
+type="password"
+placeholder="Password"
+>
+
+</div>
+
+
+
+
+
+<div class="auth-buttons">
+
+
+<button
+class="primary-btn"
+onclick="register()">
+
+Create Account
+
+</button>
+
+
+
+
+<button
+class="secondary-btn"
+onclick="login()">
+
+Login
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+<div id="authMessage"
+class="auth-message">
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+CHAT PAGE
+========================= -->
+
+
+<section id="chat-page"
+class="chat-container hidden">
+
+
+
+
+
+<header class="top-bar">
+
+
+
+<div class="profile-area">
+
+
+<div class="avatar">
+👤
+</div>
+
+
+
+<div>
+
+<h2>
+ChatMe
+</h2>
+
+
+<span id="status">
+Offline
+</span>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="top-actions">
+
+
+<button onclick="startAudioCall()">
+📞
+</button>
+
+
+
+<button onclick="startVideoCall()">
+📹
+</button>
+
+
+
+<button onclick="createGroupCall()">
+👥
+</button>
+
+
+
+<button onclick="toggleTheme()">
+🌙
+</button>
+
+
+</div>
+
+
+
+</header>
+
+
+
+
+
+
+
+
+
+<div class="chat-layout">
+
+
+
+
+
+<!-- SIDEBAR -->
+
+
+<aside class="sidebar">
+
+
+<div class="search-box">
+
+
+<input
+id="receiver"
+type="text"
+placeholder="Search username"
+>
+
+
+</div>
+
+
+
+
+
+<button
+class="load-btn"
+onclick="loadMessages()">
+
+Load Conversation
+
+</button>
+
+
+
+
+
+<div class="contact-title">
+
+Contacts
+
+</div>
+
+
+
+
+<div id="contacts">
+
+
+<div class="contact-item">
+
+🟢 Online Users
+
+</div>
+
+
+</div>
+
+
+
+</aside>
+
+
+
+
+
+
+
+
+
+<!-- CHAT AREA -->
+
+
+<main class="chat-window">
+
+
+
+
+
+<div class="conversation-header">
+
+
+<h3 id="chatUser">
+
+Select User
+
+</h3>
+
+
+<span id="typing">
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="message-area">
+
+
+<ul id="messages">
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- CALL AREA -->
+
+
+<div id="call-area"
+class="call-area hidden">
+
+
+<div class="video-box">
+
+
+<video
+id="localVideo"
+autoplay
+muted>
+</video>
+
+
+<span>
+You
+</span>
+
+
+</div>
+
+
+
+
+
+<div class="video-box">
+
+
+<video
+id="remoteVideo"
+autoplay>
+</video>
+
+
+<span>
+Remote
+</span>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- MESSAGE INPUT -->
+
+
+<div class="message-input-area">
+
+
+
+
+
+<label class="attach-btn">
+
+📎
+
+
+<input
+id="file"
+type="file"
+hidden
+accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+onchange="uploadFile()"
+>
+
+
+</label>
+
+
+
+
+
+
+
+<button
+class="emoji-btn"
+onclick="toggleEmoji()">
+
+😊
+
+</button>
+
+
+
+
+
+
+
+<input
+id="message"
+type="text"
+placeholder="Type a message..."
+onkeypress="enterSend(event)"
+>
+
+
+
+
+
+
+
+<button
+class="send-btn"
+onclick="sendMessage()">
+
+➤
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- EMOJI PANEL -->
+
+
+<div id="emoji-panel"
+class="emoji-panel hidden">
+
+
+<button onclick="addEmoji('😀')">
+😀
+</button>
+
+
+<button onclick="addEmoji('😂')">
+😂
+</button>
+
+
+<button onclick="addEmoji('❤️')">
+❤️
+</button>
+
+
+<button onclick="addEmoji('👍')">
+👍
+</button>
+
+
+<button onclick="addEmoji('🔥')">
+🔥
+</button>
+
+
+<button onclick="addEmoji('😍')">
+😍
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- FILE PREVIEW -->
+
+
+<div id="file-preview"
+class="file-preview hidden">
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- GROUP CALL MODAL -->
+
+
+<div id="group-call-modal"
+class="modal hidden">
+
+
+
+<div class="modal-card">
+
+
+<h3>
+Group Call
+</h3>
+
+
+
+<input
+id="roomId"
+type="text"
+placeholder="Room ID"
+>
+
+
+
+
+
+<button onclick="joinGroupCall()">
+
+Join Room
+
+</button>
+
+
+
+
+
+<button onclick="closeModal()">
+
+Close
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</main>
+
+
+</div>
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+<script src="/static/app.js"></script>
+
+
+
+</div>
+
+
+</body>
+
+
+</html>
